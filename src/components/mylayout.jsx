@@ -1,4 +1,4 @@
-import React, { useState }  from "react";
+import React, { useState, useEffect } from "react";
 import {
   DesktopOutlined,
   FileOutlined,
@@ -6,57 +6,159 @@ import {
   UserOutlined,
   CodepenCircleOutlined,
 } from "@ant-design/icons";
-import { Breadcrumb, Layout, Menu, theme, Dropdown, message } from "antd";
+import { Breadcrumb, Layout, Menu, theme, Dropdown, message,Avatar } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
-import icon from "../img/icon.png";
-import logo from "../img/logo.png";
-// import MyWeb3 from "./web3";
+import UploadCredit from "../pages/credit/creditUpload";
+import CreditList from "../pages/credit/creditList";
+import ExchangePoint from "../pages/points/pointsExchange";
+import PointList from "../pages/points/pointsList";
+import ExchangeNft from "../pages/nft/exchangeNft";
+import Mynft from "../pages/nft/myNft";
+import Marketinguplod from "../pages/marking/markingUpload";
+import Marketinglist from "../pages/marking/markingList";
+import Personallist from "../pages/personal/InformationList";
+import UpdatePassw from "../pages/personal/UpdatePassw";
+import icon from "../image/icon.png";
+import logo from "../image/logo.png";
+import axios from "axios"; // 引入 axios 库
 const { Header, Content, Footer, Sider } = Layout;
 
-
-function getItem(label, key, icon, children) {
-  return {
-    key,
-    icon,
-    children,
-    label,
-  };
-}
-
 const items = [
-  getItem("信用管理", "/home/credit", <CodepenCircleOutlined />, [
-    getItem("上传信用凭证", "/home/credit/uploadCredit"),
-    getItem("信用凭证列表", "/home/credit/creditList"),
-  ]),
-  getItem("积分管理", "/home/points", <PieChartOutlined />, [
-    getItem("积分兑换", "/home/points/exchangePoint"),
-    getItem("积分历史列表", "/home/points/pointList"),
-  ]),
-  getItem("NFT勋章管理", "/home/nft", <DesktopOutlined />, [
-    getItem("兑换勋章", "/home/nft/exchangeNft"),
-    getItem("我的勋章", "/home/nft/MyNft"),
-  ]),
-  getItem("营销信息管理", "/home/marketing", <FileOutlined />, [
-    getItem("上传营销信息", "/home/marketing/uplodMarket"),
-    getItem("营销信息列表", "/home/marketing/marketList"),
-  ]),
-  getItem("个人信息", "/home/PersonalInformation", <UserOutlined />, [
-    getItem("我的个人信息", "/home/PersonalInformation/InformationList"),
-    getItem("修改密码", "/home/PersonalInformation/UpdatePassw"),
-  ]),
+  {
+    key: '/home/credit',
+    icon: <CodepenCircleOutlined />,
+    label: '信用管理',
+    roles: ['admin', 'editor'],
+    children: [
+      {
+        label: '上传信用凭证',
+        key: '/home/credit/uploadCredit',
+        element: <UploadCredit />,
+        roles: ['admin'],
+      },
+      {
+        label: '信用凭证列表',
+        key: '/home/credit/creditList',
+        element: <CreditList />,
+        roles: ['admin', 'editor'],
+      },
+    ],
+  },
+  {
+    key: '/home/points',
+    icon: <PieChartOutlined />,
+    label: '积分管理',
+    roles: ['admin', 'editor'],
+    children: [
+      {
+        label: '积分兑换',
+        key: '/home/points/exchangePoint',
+        element: <ExchangePoint />,
+        roles: ['admin', 'editor'],
+      },
+      {
+        label: '积分历史列表',
+        key: '/home/points/pointList',
+        element: <PointList />,
+        roles: ['admin', 'editor'],
+      },
+    ],
+  },
+  {
+    key: '/home/nft',
+    icon: <DesktopOutlined/>,
+    label: 'NFT勋章管理',
+    roles: ['admin', 'editor'],
+    children: [
+      {
+        label: '兑换勋章',
+        key: '/home/nft/exchangeNft',
+        element: <ExchangeNft />,
+        roles: ['admin', 'editor'],
+      },
+      {
+        label: '我的勋章',
+        key: '/home/nft/Mynft',
+        element: <Mynft />,
+        roles: ['admin', 'editor'],
+      },
+    ],
+  },
+  {
+    key: '/home/marketing',
+    icon: <FileOutlined />,
+    label: '营销信息管理',
+    roles: ['admin', 'editor'],
+    children: [
+      {
+        label: '上传营销信息',
+        key: '/home/marketing/uplod',
+        element: <Marketinguplod />,
+        roles: ['admin', 'editor'],
+      },
+      {
+        label: '营销信息列表',
+        key: '/home/marketing/list',
+        element: <Marketinglist />,
+        roles: ['admin', 'editor'],
+      },
+    ],
+  },
+  {
+    key: '/home/Personal',
+    icon: <UserOutlined/>,
+    label: '个人信息',
+    roles: ['admin', 'editor'],
+    children: [
+      {
+        label: '我的个人信息',
+        key: '/home/Personal/list',
+        element: <Personallist />,
+        roles: ['admin', 'editor'],
+      },
+      {
+        label: '修改密码',
+        key: '/home/Personal/UpdatePassw',
+        element: <UpdatePassw />,
+        roles: ['admin', 'editor'],
+      },
+    ],
+  },
 ];
 
 const MyLayout = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
+  const [avatarSrc, setAvatarSrc] = useState(icon); // 初始值为默认头像
   const {
     token: { colorBgContainer },
   } = theme.useToken();
   const navigate = useNavigate();
   const location = useLocation();
-  const username = location.state && location.state.username;
+  const username = sessionStorage.getItem('username')
+  console.log(username)
+
+  useEffect(() => {
+    // 在组件挂载时或路径改变时，更新 username
+    // const usernameFromLocation = location.state && location.state.username;
+    // setUsername(usernameFromLocation);
+  }, [location]);
+
+  useEffect(() => {
+    // 在组件挂载时从数据库获取头像信息
+    axios.get(`http://localhost:8080/api/users/getIcon?username=${username}`)
+      .then(response => {
+        if (response.data.success) {
+          setAvatarSrc(response.data.avatarUrl);
+        }
+      })
+      .catch(error => {
+        console.error("avatar获取失败:", error);
+      });
+  }, [username]);
+
   const pathname = location.pathname;
 
-  const findBreadcrumbItems = (items, path) => {
+  const findBreadcrumbItems = (items, path)=> {
     const breadcrumbItems = [];
     for (const item of items) {
       if (item.key === path) {
@@ -99,41 +201,58 @@ const MyLayout = ({ children }) => {
       </Sider>
       <Layout>
         <Header style={{ padding: 0, background: colorBgContainer }}>
-          <span className="app-title" style={{ float: "left", marginLeft: "20px" }}>基于区块链的营销信用系统</span>
+          <span
+            className="app-title"
+            style={{ float: "left", marginLeft: "20px" }}
+          >
+            基于区块链的营销信用系统
+          </span>
           <div style={{ float: "right", marginRight: "20px" }}>
             <Dropdown
-              overlay={
-                <Menu
-                  onClick={({ key }) => {
-                    if (key === "logout") {
-                      navigate("/");
-                    }
-                    if (key === "userCenter") {
-                      navigate("/home/PersonalInformation/InformationList");
-                      message.info("欢迎来到个人中心");
-                    } else {
-                      message.info("退出登录成功，欢迎来到登录页面");
-                    }
-                  }}
-                >
-                  <Menu.Item key="userCenter">个人中心</Menu.Item>
-                  <Menu.Item key="logout">退出</Menu.Item>
-                </Menu>
-              }
+              menu={{
+                items: [
+                  {
+                    label: (
+                      <span
+                        onClick={() => {
+                          navigate("/home/Personal/list");
+                          message.info("欢迎来到个人中心");
+                        }}
+                      >
+                        个人中心
+                      </span>
+                    ),
+                    key: "userCenter",
+                  },
+                  {
+                    label: (
+                      <span
+                        onClick={() => {
+                          navigate("/");
+                          message.info("退出登录成功，欢迎来到登录页面");
+                        }}
+                      >
+                        退出
+                      </span>
+                    ),
+                    key: "logOut",
+                  },
+                ],
+              }}
             >
               <div>
-                <img
-                  src={icon}
-                  alt="Logo"
-                  style={{
-                    width: "30px",
-                    borderRadius: "50%",
-                    float: "right",
-                    marginTop: "16px",
-                    marginRight: "20px",
-                  }}
-                ></img>
-                <span>欢迎！{username}</span>
+              <Avatar
+                src={avatarSrc}
+                alt="Avatar"
+                style={{
+                  width: "30px",
+                  borderRadius: "60%",
+                  float: "right",
+                  marginTop: "16px",
+                  marginRight: "20px",
+                }}
+              />
+              <span>欢迎！{username}</span>
               </div>
             </Dropdown>
           </div>
@@ -146,7 +265,7 @@ const MyLayout = ({ children }) => {
                   onClick={() => navigate(item.key)}
                   style={{ cursor: "pointer" }}
                 >
-                  {item.icon} {item.label} {/* 将 icon 移至这里 */}
+                  {item.icon} {item.label}
                 </span>
               </Breadcrumb.Item>
             ))}

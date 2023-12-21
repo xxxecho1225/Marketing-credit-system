@@ -5,20 +5,32 @@
   "dependencies": {
     "-": "^0.0.1",
     "@openzeppelin/contracts": "^4.0.0",
+    "@pinata/sdk": "latest",
     "@reduxjs/toolkit": "^1.9.7",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.4.0",
     "@testing-library/user-event": "^7.2.1",
-    "antd": "^5.10.1",
+    "@types/jest": "^29.5.7",
+    "@types/node": "18.14.5",
+    "@types/react": "18.0.28",
+    "@types/react-dom": "18.0.11",
+    "antd": "^5.2.3",
     "axios": "^1.5.1",
     "bcrypt": "^5.1.1",
+    "bignumber.js": "^9.1.2",
     "cors": "^2.8.5",
+    "eslint": "^6.6.0",
+    "ethers": "^5.7.0",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
     "g": "^2.0.1",
+    "hardhat": "^2.19.1",
     "jsonwebtoken": "^9.0.2",
     "loadsh": "^0.0.4",
+    "multer": "^1.4.5-lts.1",
     "mysql": "^2.18.1",
+    "path": "^0.12.7",
+    "qs": "^6.11.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.11.0",
@@ -29,9 +41,12 @@
     "redux-devtools-extension": "^2.13.9",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
+    "streamifier": "^0.1.1",
+    "typescript": "3.9.10",
     "validator": "^13.11.0",
     "web-vitals": "^1.1.2",
-    "web3": "^4.2.0"
+    "web3": "^4.2.1",
+    "webpack": "^4.42.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -57,6 +72,8 @@
     ]
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.23.2",
+    "@nomiclabs/hardhat-ethers": "^2.2.3",
     "http-proxy-middleware": "^2.0.6",
     "nodemon": "^3.0.1"
   }
